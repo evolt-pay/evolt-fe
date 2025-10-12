@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@evolt/components/common/theme-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,11 +24,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased  relative`}
       >
-        {children}
+        <div className="w-[393px] h-[393px] bg-[#555CE4] rounded-full absolute top-[122.66px] left-1/2 -translate-x-1/2 blur-[1000px] z-[-1]"></div>
+
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="relative z-10">{children}</div>
+        </ThemeProvider>
       </body>
     </html>
   );
