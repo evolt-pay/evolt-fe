@@ -7,6 +7,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@evolt/components/ui/drawer";
+import { StakeInput } from "./StakeInput";
 
 interface InvestmentDrawerProps {
   open: boolean;
@@ -53,38 +54,11 @@ export function InvestmentDrawer({
           </DrawerHeader>
 
           <div className="px-6 pb-8 space-y-6">
-            {/* Amount Input Section */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <label className="text-lg text-text-secondary">
-                  Amount to Stake
-                </label>
-                <Button
-                  onClick={handleMaxClick}
-                  size="sm"
-                  className="px-6 rounded-full"
-                >
-                  MAX
-                </Button>
-              </div>
-
-              <div className="bg-drawer-card border border-drawer-border rounded-2xl p-6 space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-text-muted">USDT/USDC</span>
-                  <div className="h-6 w-px bg-drawer-border" />
-                  <input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="flex-1 bg-transparent text-3xl font-medium text-text-primary outline-none"
-                    placeholder="0"
-                  />
-                </div>
-                <div className="text-right text-sm text-text-muted">
-                  Avl: {availableBalance.toFixed(2)} USDT
-                </div>
-              </div>
-            </div>
+            <StakeInput
+              availableBalance={534.9}
+              currency="USDT"
+              tokenPair="USDT/USDC"
+            />
 
             {/* Staking Details */}
             <div className="space-y-3">

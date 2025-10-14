@@ -15,10 +15,11 @@ function Page() {
   return (
     <div className="space-y-8">
       <BalanceCard balance={12345.67} currency="USDC" />
-      <AssetTabs />
+      {/* <AssetTabs /> */}
 
       {/* Investment Cards Example from Screenshots */}
       <InvestmentCard
+        id="1"
         name="TotalEnergies"
         subtitle="Chika Logistics Ltd."
         logo="https://via.placeholder.com/80/FFFFFF/000000?text=TE"
@@ -31,6 +32,7 @@ function Page() {
       />
 
       <InvestmentCard
+        id="2"
         name="Honeywell"
         subtitle="Mind Colony LTD"
         logo="https://via.placeholder.com/80/FFFFFF/000000?text=H"

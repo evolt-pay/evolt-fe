@@ -71,7 +71,7 @@ export const InvoiceCard = ({
   blockchainExplorerUrl,
 }: InvoiceCardProps) => {
   return (
-    <div className="w-full mx-auto bg-invoice-bg rounded-2xl shadow-2xl">
+    <div className="w-full mx-auto bg-black p-5 rounded-2xl shadow-2xl">
       {/* Header */}
       <div className="flex items-start gap-4 mb-8">
         {logoUrl && (
@@ -142,7 +142,7 @@ export const InvoiceCard = ({
       <div className="flex flex-wrap gap-4 items-end justify-between mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl sm:text-5xl font-bold text-invoice-text">
+            <span className="text-2xl sm:text-3xl font-bold text-invoice-text">
               {amountFunded.toFixed(2)} {currency}
             </span>
             <Badge className="bg-primary text-invoice-badge border-0 text-xs sm:text-sm px-3 py-1 rounded-full">
@@ -190,8 +190,9 @@ export const InvoiceCard = ({
 
       {/* Blockchain Explorer Button */}
       <Button
+        size="sm"
         variant="secondary"
-        className="w-full bg-secondary hover:bg-secondary/80 text-[#B7BAF5] font-medium py-6 text-sm sm:text-base transition-all duration-200 hover:scale-[1.02] rounded-full max-w-2xl"
+        className="w-full bg-secondary hover:bg-secondary/80 text-[#B7BAF5] font-medium py-6 text-sm sm:text-base transition-all duration-200 hover:scale-[1.02] rounded-full max-w-md"
         onClick={() => window.open(blockchainExplorerUrl, "_blank")}
       >
         <span>View Verification On Hedera Explorer</span>

@@ -3,7 +3,9 @@ import { Info } from "lucide-react";
 import { cn } from "@evolt/lib/utils";
 import { Badge } from "@evolt/components/ui/badge";
 import { Progress } from "@evolt/components/ui/progress";
+import { useRouter } from "next/navigation";
 interface InvestmentCardProps {
+  id: string;
   name: string;
   subtitle?: string;
   logo?: string;
@@ -16,6 +18,7 @@ interface InvestmentCardProps {
 }
 
 export const InvestmentCard = ({
+  id,
   name,
   subtitle,
   logo,
@@ -27,11 +30,12 @@ export const InvestmentCard = ({
   progressLeftText,
 }: InvestmentCardProps) => {
   const isFullyFunded = fundingPercentage === 100;
-
+  const { push } = useRouter();
   return (
     <div
+      onClick={() => push(`/dashboard/pools/${id}`)}
       className={cn(
-        "bg-black rounded-3xl border border-border overflow-hidden p-6 transition-all duration-300 ease-smooth shadow-card hover:shadow-glow",
+        "bg-black cursor-pointer rounded-3xl border border-border overflow-hidden p-6 transition-all duration-300 ease-smooth shadow-card hover:shadow-glow",
         "hover:bg-card-hover"
       )}
     >
