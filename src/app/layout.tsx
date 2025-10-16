@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@evolt/components/common/theme-provider";
 import "./globals.css";
+import { Toaster } from "@evolt/components/ui/sonner";
+import { ReactQueryClientProvider } from "@evolt/components/common/queryClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +38,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative z-10">{children}</div>
+          <ReactQueryClientProvider>
+            <div className="relative z-10">{children}</div>
+
+            <Toaster />
+          </ReactQueryClientProvider>
         </ThemeProvider>
       </body>
     </html>

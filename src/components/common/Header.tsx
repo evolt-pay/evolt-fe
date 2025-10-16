@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import { UserCircle, LogOut, Settings, User } from "lucide-react";
 import Logo from "./logo";
 import Link from "next/link";
@@ -13,27 +11,36 @@ import {
   DropdownMenuTrigger,
 } from "@evolt/components/ui/dropdown-menu";
 
+import { toast } from "sonner";
+import { useState } from "react";
+import { SignDialog } from "./SignModal";
+import { useHWBridge } from "./HWBridgeClientProvider";
+
 const Header = () => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
+  const { accountId, connect, disconnect } = useHWBridge();
+
+  const [openAuthModal, setOpenAuthModal] = useState(false);
 
   const handleConnect = () => {
-    // Simulate wallet connection - replace with actual wallet connection logic
-    const mockAddress = "asfghnstr.yurtg435serfsd";
-    setWalletAddress(mockAddress);
-    setIsConnected(true);
+    toast.promise(connect(), {
+      loading: "Connecting wallet...",
+      success: (data) => {
+        setOpenAuthModal(true);
+        return `Connected 🦄`;
+      },
+      error: (err) => err?.message || "Failed to connect",
+    });
   };
 
   const handleDisconnect = () => {
-    setWalletAddress("");
-    setIsConnected(false);
+    toast.promise(disconnect(), {
+      loading: "Disconnecting wallet...",
+      success: (data) => {
+        return `Disconnected 🦄`;
+      },
+      error: (err) => err?.message || "Failed to discountconnect",
+    });
   };
-
-  const truncateAddress = (address: string) => {
-    if (address.length <= 20) return address;
-    return `${address.slice(0, 8)}...${address.slice(-6)}`;
-  };
-
   return (
     <header className="flex items-center justify-between py-4 max-w-6xl m-auto">
       <div className="flex items-center gap-2">
@@ -43,7 +50,7 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-3">
-        {!isConnected ? (
+        {!accountId ? (
           <Button onClick={handleConnect} variant="default">
             Connect Wallet
           </Button>
@@ -55,7 +62,7 @@ const Header = () => {
                   <UserCircle className="w-6 h-6 text-gray-400" />
                 </div>
                 <span className="text-sm font-medium text-gray-300 hidden sm:block">
-                  {truncateAddress(walletAddress)}
+                  {accountId}
                 </span>
               </button>
             </DropdownMenuTrigger>
@@ -80,6 +87,11 @@ const Header = () => {
           </DropdownMenu>
         )}
       </div>
+      <SignDialog
+        open={openAuthModal}
+        onOpenChange={setOpenAuthModal}
+        accountId={accountId!}
+      />
     </header>
   );
 };

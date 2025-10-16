@@ -34,7 +34,7 @@ const Tabs: TabConfig[] = [
 function Page() {
   return (
     <div className="mt-10 w-full max-w-2xl m-auto space-y-5">
-      <BalanceCard balance={0.0} currency="vUSD" />
+      <BalanceCard initialBalance={0.0} currency="vUSD" />
       <AssetTabs tabs={Tabs} />
       <StartInvestings />
     </div>

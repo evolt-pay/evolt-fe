@@ -8,6 +8,7 @@ import AssetContent from "@evolt/components/features/dashboard/AssetContent";
 import WithdrawContent from "@evolt/components/features/dashboard/WithdrawContent";
 import { useSearchParams } from "next/navigation";
 import { BackButton } from "@evolt/components/common/BackButton";
+import Deposit from "@evolt/components/features/dashboard/Deposit";
 
 const Tabs: TabConfig[] = [
   {
@@ -22,7 +23,7 @@ const Tabs: TabConfig[] = [
     label: "Deposit",
     icon: ArrowDownLeft,
     type: "tab" as const,
-    content: <h1>Deposit</h1>,
+    content: <Deposit />,
   },
   {
     id: "withdraw",

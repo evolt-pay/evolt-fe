@@ -1,5 +1,6 @@
 import Header from "@evolt/components/common/Header";
 import React from "react";
+import { HWBridgeClientProvider } from "@evolt/components/common/HWBridgeClientProvider";
 
 export default function Layout({
   children,
@@ -8,8 +9,7 @@ export default function Layout({
 }>) {
   return (
     <div className="p-5">
-      <Header />
-      {children}
+      <HWBridgeClientProvider>{children}</HWBridgeClientProvider>
     </div>
   );
 }
