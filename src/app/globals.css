@@ -106,7 +106,8 @@
   --border: oklch(0.275 0 0);
   --input: oklch(0.325 0 0);
   --ring: oklch(0.556 0 0);
-
+ --swap-card: 240 6% 20%;
+  --swap-card-border: 240 6% 28%;
   
 }
 
@@ -147,6 +148,9 @@
   /* Animations */
   --transition-smooth: var(--transition-smooth);
   --transition-bounce: var(--transition-bounce);
+
+  --swap-card: var(--swap-card);
+  --swap-card-border: var(--swap-card-border);
 }
 
 
@@ -233,4 +237,13 @@
 
 @utility animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+
+@utility bg-swap-card {
+  background-color: oklch(var(--swap-card));
+}
+
+@utility border-swap-card {
+  border-color: oklch(var(--swap-card-border));
 }

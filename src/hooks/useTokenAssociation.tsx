@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useHWBridge } from "@evolt/components/common/HWBridgeClientProvider";
 
 interface UseTokenAssociationResult {
@@ -9,76 +9,62 @@ interface UseTokenAssociationResult {
 }
 
 /**
- * Custom hook to check if a Hedera account is associated with a given token,
- * and provide a helper to perform the association.
+ * Hook: Check if a Hedera account is associated with a token,
+ * and provide a mutation to associate it if not.
  */
 export function useTokenAssociation(
   tokenId?: string
 ): UseTokenAssociationResult {
   const { sdk, accountId } = useHWBridge();
+  const queryClient = useQueryClient();
 
-  const [isTokenAssociated, setIsTokenAssociated] = useState<boolean | null>(
-    null
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // --- Query: Check if token is associated ---
+  const {
+    data: isTokenAssociated,
+    isLoading,
+    error,
+  } = useQuery<boolean | null>({
+    queryKey: ["token-association", accountId, tokenId],
+    queryFn: async () => {
+      if (!sdk || !accountId || !tokenId) return null;
 
-  /**
-   * Fetch account info and determine if token is associated
-   */
-  const checkAssociation = useCallback(async () => {
-    if (!sdk || !accountId || !tokenId) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
       const accountInfo = await sdk.requestAccount(accountId);
       const tokens = accountInfo?.balance?.tokens ?? [];
 
-      const associated = tokens.some(
-        (t: { token_id: string }) => t.token_id === tokenId
-      );
+      return tokens.some((t: { token_id: string }) => t.token_id === tokenId);
+    },
+    enabled: !!sdk && !!accountId && !!tokenId, // only run when all are available
+    staleTime: Infinity, // don’t re-fetch unless manually invalidated
+  });
 
-      setIsTokenAssociated(associated);
-    } catch (err: any) {
-      console.error("Error checking token association:", err);
-      setError(err.message || "Failed to check token association");
-      setIsTokenAssociated(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [sdk, accountId, tokenId]);
+  // --- Mutation: Associate token ---
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!sdk || !accountId || !tokenId)
+        throw new Error("SDK, AccountId, or TokenId missing");
 
-  /**
-   * Associate the token with the account
-   */
-  const handleAssociate = useCallback(async () => {
-    if (!sdk || !accountId || !tokenId) {
-      console.warn("SDK, AccountId, or TokenId missing");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const done = await sdk.associateTokenToAccount(accountId, tokenId);
-
-      // Recheck association after operation
-      await checkAssociation();
-    } catch (err: any) {
+      await sdk.associateTokenToAccount(accountId, tokenId);
+    },
+    onSuccess: async () => {
+      // Re-fetch the query to update association state
+      await queryClient.invalidateQueries({
+        queryKey: ["token-association", accountId, tokenId],
+      });
+    },
+    onError: (err: any) => {
       console.error("Error associating token:", err);
-      setError(err.message || "Failed to associate token");
-    } finally {
-      setLoading(false);
-    }
-  }, [sdk, accountId, tokenId, checkAssociation]);
+    },
+  });
 
-  /**
-   * Automatically check on mount or when dependencies change
-   */
-  useEffect(() => {
-    checkAssociation();
-  }, [checkAssociation]);
+  // --- Public handler for triggering the mutation ---
+  const handleAssociate = async () => {
+    await mutation.mutateAsync();
+  };
 
-  return { isTokenAssociated, loading, error, handleAssociate };
+  return {
+    isTokenAssociated: isTokenAssociated ?? null,
+    loading: isLoading || mutation.isPending,
+    error: (error as Error)?.message ?? null,
+    handleAssociate,
+  };
 }
