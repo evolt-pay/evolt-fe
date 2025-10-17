@@ -35,21 +35,23 @@ export function AssociateTokenDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0 gap-0 border-0 bg-transparent overflow-hidden">
-        {/* Animated background glow */}
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-2xl p-0 gap-0 border-0 bg-transparent overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/10 to-secondary/20 animate-glow-pulse blur-3xl" />
 
         {/* Main content container */}
         <div className="relative bg-card/90 backdrop-blur-xl rounded-2xl border border-primary/30 shadow-2xl animate-scale-in">
           {/* Holographic border effect */}
-          <div className="absolute inset-0 rounded-2xl bg-[var(--gradient-holographic)] opacity-20 blur-sm" />
+          <div className="absolute inset-0 rounded-2xl bg-gradient-holographic opacity-20 blur-sm" />
 
           {/* Header */}
           <div className="relative flex items-center justify-between p-8 pb-6">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl animate-glow-pulse" />
-                <div className="relative h-12 w-12 rounded-full bg-[var(--gradient-primary)] flex items-center justify-center">
+                <div className="relative h-12 w-12 rounded-full bg-gradient-primary flex items-center justify-center">
                   <Link2 className="h-6 w-6 text-primary-foreground" />
                 </div>
               </div>

@@ -13,7 +13,6 @@ export default function Deposit() {
   const { isTokenAssociated, loading, error } = useTokenAssociation(tokenId);
   const [open, setOpen] = useState(false);
 
-  // Automatically open modal when token is not associated
   useEffect(() => {
     if (isTokenAssociated === false && accountId) {
       setOpen(true);
