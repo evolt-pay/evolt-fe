@@ -3,7 +3,8 @@
 import React from "react";
 import { BackButton } from "@evolt/components/common/BackButton";
 import { InvestmentCard } from "@evolt/components/features/dashboard/InvestmentCard";
-import { fetchPools, PoolItem } from "@evolt/app/api/pools";
+import { PoolItem } from "@evolt/types/pool";
+import { usePools, usePrefetchPoolDetails } from "./api";
 
 function formatUSD(n?: number) {
   if (typeof n !== "number") return "—";
@@ -18,27 +19,10 @@ function toCardStatus(item: PoolItem): "Open" | "Closed" | "Pending" {
 }
 
 export default function PoolsPage() {
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  const [items, setItems] = React.useState<PoolItem[]>([]);
+  const { data, isLoading, isError, error } = usePools({ page: 1, limit: 20, status: "all" });
+  const prefetch = usePrefetchPoolDetails();
 
-  React.useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await fetchPools({ page: 1, limit: 20, status: "all" });
-        if (mounted) setItems(res.items || []);
-      } catch (e: any) {
-        if (mounted) setError(e?.message || "Failed to load pools");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const items = data?.items ?? [];
 
   return (
     <div className="mt-10 w-full max-w-2xl m-auto space-y-5">
@@ -47,7 +31,7 @@ export default function PoolsPage() {
         <h1>Investment Pools</h1>
       </div>
 
-      {loading && (
+      {isLoading && (
         <div className="space-y-3">
           <div className="h-24 rounded-2xl bg-muted animate-pulse" />
           <div className="h-24 rounded-2xl bg-muted animate-pulse" />
@@ -55,13 +39,9 @@ export default function PoolsPage() {
         </div>
       )}
 
-      {error && (
-        <div className="text-sm text-red-400">
-          {error}
-        </div>
-      )}
+      {isError && <div className="text-sm text-red-400">{(error as Error)?.message ?? "Failed to load pools"}</div>}
 
-      {!loading && !error && (
+      {!isLoading && !isError && (
         <div className="grid grid-cols-1 md:grid-cols-1 space-y-5">
           {items.map((it) => {
             const pct =
@@ -80,19 +60,20 @@ export default function PoolsPage() {
                   : "Closed";
 
             return (
-              <InvestmentCard
-                key={it._id}
-                id={it._id}
-                name={it.corporateName ?? it.businessName ?? "Unnamed Pool"}
-                subtitle={it.businessName && it.corporateName ? it.businessName : undefined}
-                logo={it.corporateLogo ?? undefined}
-                apy={`${((it.apy ?? 0) * 100).toFixed(1)}% APY`}
-                minAmount={`${formatUSD(it.minInvestment)} USDT`}
-                maxAmount={`${formatUSD(it.maxInvestment)} USDT`}
-                fundingStatus={status}
-                fundingPercentage={pct}
-                progressLeftText={leftText}
-              />
+              <div key={it._id} onMouseEnter={() => prefetch(it._id)}>
+                <InvestmentCard
+                  id={it._id}
+                  name={it.corporateName ?? it.businessName ?? "Unnamed Pool"}
+                  subtitle={it.businessName && it.corporateName ? it.businessName : undefined}
+                  logo={it.corporateLogo ?? undefined}
+                  apy={`${((it.apy ?? 0) * 100).toFixed(1)}% APY`}
+                  minAmount={`${formatUSD(it.minInvestment)} USDT`}
+                  maxAmount={`${formatUSD(it.maxInvestment)} USDT`}
+                  fundingStatus={status}
+                  fundingPercentage={pct}
+                  progressLeftText={leftText}
+                />
+              </div>
             );
           })}
         </div>
