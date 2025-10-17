@@ -18,7 +18,7 @@ export default function Deposit() {
     if (isTokenAssociated === false && accountId) {
       setOpen(true);
     } else {
-      setOpen(false);
+      setOpen(true);
     }
   }, [isTokenAssociated, accountId]);
 
