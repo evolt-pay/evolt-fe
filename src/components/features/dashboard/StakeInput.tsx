@@ -1,29 +1,33 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface StakeInputProps {
   availableBalance: number;
-
   currency: string;
-
   tokenPair: string;
+  amount: string;
+  min: number;
+  max: number;
+  onAmountChange: (value: string) => void;
 }
 
 export const StakeInput: React.FC<StakeInputProps> = ({
   availableBalance,
   currency,
   tokenPair,
+  amount,
+  onAmountChange,
+  min,
+  max,
 }) => {
-  const [amount, setAmount] = useState<string>("500");
-
   const handleMaxClick = () => {
-    setAmount(availableBalance.toString());
+    onAmountChange(availableBalance.toString());
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
     if (/^\d*\.?\d*$/.test(value)) {
-      setAmount(value);
+      onAmountChange(value);
     }
   };
 

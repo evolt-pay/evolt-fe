@@ -20,7 +20,6 @@ export const TokenSwap = () => {
     "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
   );
   const [timeLeft, setTimeLeft] = useState(600);
-  const [copied, setCopied] = useState(false);
 
   const handleDepositAmountChange = (value: string) => {
     setDepositAmount(value);
@@ -37,20 +36,6 @@ export const TokenSwap = () => {
     setTimeLeft(600);
   };
 
-  const handleCopyAddress = () => {
-    navigator.clipboard.writeText(depositAddress);
-    setCopied(true);
-    toast("Address Copied");
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleConfirmDeposit = () => {
-    toast("Test Deposit Successful!");
-    setShowDepositModal(false);
-    setDepositAmount("");
-    setVusdAmount("");
-  };
-
   useEffect(() => {
     if (showDepositModal && timeLeft > 0) {
       const timer = setInterval(() => {
@@ -59,12 +44,6 @@ export const TokenSwap = () => {
       return () => clearInterval(timer);
     }
   }, [showDepositModal, timeLeft]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
 
   return (
     <div className="w-full space-y-6">

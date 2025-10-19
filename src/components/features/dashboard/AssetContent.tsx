@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Tabs,
@@ -6,7 +7,14 @@ import {
   TabsTrigger,
 } from "@evolt/components/ui/tabs";
 import { PoolCard } from "./PoolCard";
+import { usePortfolio } from "@evolt/hooks/usePortfoliio";
+import { formatCurrency } from "@evolt/lib/formatCurrency";
+import StartInvestings from "./StartInvesting";
+import { PortfolioLoading } from "./portfolioLoading";
+import NoInvestmentDue from "./NoInvestmentDue";
 export function AssetContent() {
+  const { portfolios, isLoading } = usePortfolio();
+
   return (
     <div>
       <Tabs defaultValue="pending" className="w-full">
@@ -15,25 +23,39 @@ export function AssetContent() {
           <TabsTrigger value="completed">Completed Stake</TabsTrigger>
         </TabsList>
         <TabsContent value="pending">
-          <PoolCard
-            name="Dangote Rice Mill"
-            totalValueLocked="245.00 USDT"
-            totalValueLockedSmall="0.0000000134S"
-            totalEarnings="3.23 USDT"
-            totalEarningsSmall="0.0000002345"
-            percentageChange="0.028%"
-            isActive={true}
-          />
+          {portfolios?.pending.map((portfolio) => (
+            <PoolCard
+              key={portfolio.id}
+              name={portfolio.invoiceNumber}
+              totalValueLocked={formatCurrency(portfolio.vusdAmount)}
+              createdAt={portfolio.createdAt}
+              totalEarnings={formatCurrency(portfolio.expectedYield)}
+              maturedAt={portfolio.maturedAt}
+              percentageChange={portfolio.yieldRate}
+              isActive={true}
+            />
+          ))}
+
+          {!portfolios?.pending.length && !isLoading && <StartInvestings />}
+          {isLoading && <PortfolioLoading />}
         </TabsContent>
         <TabsContent value="completed">
-          <PoolCard
-            name="Dangote Rice Mill"
-            totalValueLocked="245.00 USDT"
-            totalValueLockedSmall="0.0000000134S"
-            totalEarnings="3.23 USDT"
-            totalEarningsSmall="0.0000002345"
-            isActive={false}
-          />
+          {portfolios?.completed.map((portfolio) => (
+            <PoolCard
+              key={portfolio.id}
+              name={portfolio.invoiceNumber}
+              totalValueLocked={formatCurrency(portfolio.vusdAmount)}
+              createdAt={portfolio.createdAt}
+              totalEarnings={formatCurrency(portfolio.expectedYield)}
+              maturedAt={portfolio.maturedAt}
+              percentageChange={portfolio.yieldRate}
+              isActive={false}
+            />
+          ))}
+
+          {!portfolios?.completed.length && !isLoading && <NoInvestmentDue />}
+
+          {isLoading && <PortfolioLoading />}
         </TabsContent>
       </Tabs>
     </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useHWBridge } from "@evolt/components/common/HWBridgeClientProvider";
 import { Button } from "@evolt/components/ui/button";
 import { useTokenSwap } from "@evolt/hooks/useTokenSwap";
+import { useRouter } from "next/navigation";
 
 interface DepositSummaryCardProps {
   depositAmount: string;
@@ -18,7 +19,7 @@ export const DepositSummaryCard = ({
   const { accountId } = useHWBridge();
   const { swap } = useTokenSwap();
   const [loading, setLoading] = useState(false);
-
+  const { push } = useRouter();
   const handleSwap = async () => {
     if (!accountId) {
       console.error("No Hedera account connected.");
@@ -39,6 +40,8 @@ export const DepositSummaryCard = ({
         usdcTokenId: "0.0.456858",
         amount,
       });
+
+      push("/dashboard");
     } catch (error) {
       console.error("Swap failed:", error);
     } finally {

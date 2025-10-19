@@ -54,7 +54,6 @@ export function useTokenSwap(): UseTokenSwapResult {
         .setTransactionId(TransactionId.generate(userAccountId));
 
       try {
-        // Attempt Hedera transfer but don’t block the flow if it fails
         await sdk?.dAppConnector.signAndExecuteTransaction({
           signerAccountId: userAccountId,
           transactionList: transactionToBase64String(usdcTx),
@@ -66,7 +65,6 @@ export function useTokenSwap(): UseTokenSwapResult {
         );
       }
 
-      // Proceed with the swap API call regardless
       const res = await apiClient.post("/swap/prepare", {
         accountId: userAccountId,
         amount,

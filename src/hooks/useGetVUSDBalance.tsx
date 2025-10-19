@@ -27,8 +27,7 @@ export function useGetVUSDBalance(): TokenBalanceResult {
       (t: { token_id: string }) => t.token_id === tokenId
     );
 
-    // Return the token balance or 0 if not found
-    return token ? Number(token.balance) : 0;
+    return token ? Number(token.balance) / Math.pow(10, 6) : 0;
   }, [sdk, accountId]);
 
   const {
@@ -40,7 +39,7 @@ export function useGetVUSDBalance(): TokenBalanceResult {
     queryKey: ["vusdBalance", accountId],
     queryFn: fetchBalance,
     enabled: !!sdk && !!accountId,
-    staleTime: 30_000, // 30 seconds — adjust as needed
+    staleTime: 30_000,
     refetchOnWindowFocus: false,
   });
 

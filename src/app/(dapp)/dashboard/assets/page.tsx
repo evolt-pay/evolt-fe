@@ -37,6 +37,7 @@ const Tabs: TabConfig[] = [
 function Page() {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
+
   return (
     <div className="mt-10 w-full max-w-2xl m-auto space-y-5">
       <BackButton />

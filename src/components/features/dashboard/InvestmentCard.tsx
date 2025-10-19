@@ -62,7 +62,7 @@ export const InvestmentCard = ({
         </div>
         <div className="text-right flex-shrink-0 pt-1">
           <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 justify-end">
-            Exp. APY <Info className="w-3.5 h-3.5" />
+            Exp. Yield <Info className="w-3.5 h-3.5" />
           </div>
           <div className="text-lg font-bold text-foreground">{apy}</div>
         </div>

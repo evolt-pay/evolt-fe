@@ -24,8 +24,15 @@ function formatDateTime(iso?: string | null) {
   }
 }
 
-function hashscanTxUrl(hcsTxId?: string | null, network = process.env.NEXT_PUBLIC_HASHSCAN_NETWORK ?? "testnet") {
-  return hcsTxId ? `https://hashscan.io/${network}/transaction/${encodeURIComponent(hcsTxId)}` : undefined;
+function hashscanTxUrl(
+  hcsTxId?: string | null,
+  network = process.env.NEXT_PUBLIC_HASHSCAN_NETWORK ?? "testnet"
+) {
+  return hcsTxId
+    ? `https://hashscan.io/${network}/transaction/${encodeURIComponent(
+        hcsTxId
+      )}`
+    : undefined;
 }
 
 export default function Page() {
@@ -47,7 +54,11 @@ export default function Page() {
         </div>
       )}
 
-      {isError && <div className="text-sm text-red-400">{(error as Error)?.message ?? "Failed to load pool"}</div>}
+      {isError && (
+        <div className="text-sm text-red-400">
+          {(error as Error)?.message ?? "Failed to load pool"}
+        </div>
+      )}
 
       {!isLoading && !isError && data && (
         <>
@@ -58,10 +69,10 @@ export default function Page() {
             logoUrl={data.corporateLogo ?? undefined}
             smeVendorDescription={data.businessDescription || "—"}
             corporatePayerDescription={data.corporateDescription || "—"}
-            numberOfStakers={data.stakerCountOnChain ?? 0}
+            numberOfStakers={data.totalInvestors ?? 0}
             expectedAPY={(data.apy ?? 0) * 100}
             amountFunded={data.fundedAmount ?? 0}
-            currency="USDT"
+            currency="USDC"
             duration={data.durationInDays ?? 0}
             durationUnit="days"
             verifiedBy={data.verifier ?? "—"}
@@ -80,11 +91,13 @@ export default function Page() {
 
           <InvestmentDrawer
             open={drawerOpen}
+            duration={data.durationInDays ?? 0}
             onOpenChange={setDrawerOpen}
-            // @ts-expect-error: add these props to InvestmentDrawer if desired
+            invoiceNumber={data._id}
+            apy={(data.apy ?? 0) * 100}
             tokenId={data.tokenId ?? undefined}
-            minPurchase={data.minInvestment ?? 0}
-            maxPurchase={data.maxInvestment ?? 0}
+            minPurchase={data.minInvestment ?? 10}
+            maxPurchase={data.maxInvestment ?? 1000}
             totalTarget={data.totalTarget ?? 0}
           />
         </>

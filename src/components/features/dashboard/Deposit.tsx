@@ -6,6 +6,7 @@ import { useTokenAssociation } from "@evolt/hooks/useTokenAssociation";
 import { AssociateTokenDialog } from "@evolt/components/common/AssociateTokenModal";
 import { useHWBridge } from "@evolt/components/common/HWBridgeClientProvider";
 import { TokenSwap } from "./swap";
+import { DepositSkeleton } from "./DepositLoader";
 
 const tokenId = process.env.NEXT_PUBLIC_HEDERA_VUSD_TOKEN_ID!;
 
@@ -25,7 +26,7 @@ export default function Deposit() {
 
   return (
     <div className="space-y-3">
-      {loading && <p>Checking token association...</p>}
+      {loading && <DepositSkeleton />}
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       {isTokenAssociated === null && !loading && (

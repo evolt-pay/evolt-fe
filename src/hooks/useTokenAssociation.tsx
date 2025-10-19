@@ -8,17 +8,12 @@ interface UseTokenAssociationResult {
   handleAssociate: () => Promise<void>;
 }
 
-/**
- * Hook: Check if a Hedera account is associated with a token,
- * and provide a mutation to associate it if not.
- */
 export function useTokenAssociation(
   tokenId?: string
 ): UseTokenAssociationResult {
   const { sdk, accountId } = useHWBridge();
   const queryClient = useQueryClient();
 
-  // --- Query: Check if token is associated ---
   const {
     data: isTokenAssociated,
     isLoading,
@@ -33,11 +28,10 @@ export function useTokenAssociation(
 
       return tokens.some((t: { token_id: string }) => t.token_id === tokenId);
     },
-    enabled: !!sdk && !!accountId && !!tokenId, // only run when all are available
-    staleTime: Infinity, // don’t re-fetch unless manually invalidated
+    enabled: !!sdk && !!accountId && !!tokenId,
+    staleTime: Infinity,
   });
 
-  // --- Mutation: Associate token ---
   const mutation = useMutation({
     mutationFn: async () => {
       if (!sdk || !accountId || !tokenId)
@@ -46,7 +40,7 @@ export function useTokenAssociation(
       await sdk.associateTokenToAccount(accountId, tokenId);
     },
     onSuccess: async () => {
-      // Re-fetch the query to update association state
+      console.log("Token associated");
       await queryClient.invalidateQueries({
         queryKey: ["token-association", accountId, tokenId],
       });
@@ -56,7 +50,6 @@ export function useTokenAssociation(
     },
   });
 
-  // --- Public handler for triggering the mutation ---
   const handleAssociate = async () => {
     await mutation.mutateAsync();
   };

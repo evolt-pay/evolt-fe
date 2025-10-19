@@ -129,7 +129,7 @@ export const InvoiceCard = ({
         </div>
         <div className="text-right">
           <div className="flex items-center gap-2 text-sm text-invoice-text-muted mb-1 justify-end">
-            <span>Expected APY</span>
+            <span>Expected Yield</span>
             <Info className="w-4 h-4" />
           </div>
           <p className="text-xl sm:text-2xl font-bold text-invoice-text">
