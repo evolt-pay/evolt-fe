@@ -10,7 +10,7 @@ import { PoolCard } from "./PoolCard";
 import { usePortfolio } from "@evolt/hooks/usePortfoliio";
 import { formatCurrency } from "@evolt/lib/formatCurrency";
 import StartInvestings from "./StartInvesting";
-import { PortfolioLoading } from "./portfolioLoading";
+import { PortfolioLoading } from "./PortfolioLoading";
 import NoInvestmentDue from "./NoInvestmentDue";
 export function AssetContent() {
   const { portfolios, isLoading } = usePortfolio();

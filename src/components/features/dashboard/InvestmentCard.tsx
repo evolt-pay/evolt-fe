@@ -10,11 +10,10 @@ interface InvestmentCardProps {
   subtitle?: string;
   logo?: string;
   apy: string;
-  minAmount: string;
-  maxAmount: string;
   fundingStatus: "Open" | "Closed" | "Pending";
   fundingPercentage: number;
   progressLeftText?: string;
+  totalTarget: string;
 }
 
 export const InvestmentCard = ({
@@ -23,11 +22,11 @@ export const InvestmentCard = ({
   subtitle,
   logo,
   apy,
-  minAmount,
-  maxAmount,
+
   fundingStatus,
   fundingPercentage,
   progressLeftText,
+  totalTarget,
 }: InvestmentCardProps) => {
   const isFullyFunded = fundingPercentage === 100;
   const { push } = useRouter();
@@ -64,16 +63,16 @@ export const InvestmentCard = ({
           <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 justify-end">
             Exp. Yield <Info className="w-3.5 h-3.5" />
           </div>
-          <div className="text-lg font-bold text-foreground">{apy}</div>
+          <div className="text-base font-bold text-foreground">{apy}</div>
         </div>
       </div>
 
       {/* Amount and Status Section */}
       <div className="flex items-center gap-4 mb-5">
         <span className="text-base font-semibold text-foreground">
-          {minAmount} - {maxAmount}
+          {totalTarget}
         </span>
-        <Badge variant="default">Funded</Badge>
+        <Badge variant="default">Target</Badge>
       </div>
 
       {/* Progress Section */}
@@ -93,7 +92,7 @@ export const InvestmentCard = ({
           )}
         </div>
         <div className="w-[40%]">
-          <div className="text-right text-muted-foreground flex justify-between">
+          <div className="text-right text-muted-foreground flex justify-between text-xs">
             <span>{isFullyFunded ? "Fully Funded" : "Funding progress"}</span>
             <span className="font-semibold text-foreground">
               {fundingPercentage}%

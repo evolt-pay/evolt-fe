@@ -87,6 +87,14 @@
   /* Transitions */
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+
+    --real-estate: 200 65% 75%;
+    --commodities: 40 85% 65%;
+    --private-credit: 220 55% 70%;
+    --art-collectibles: 25 70% 75%;
+    --infrastructure: 10 75% 70%;
+    --agriculture: 100 60% 65%;
 }
 
 
@@ -151,6 +159,14 @@
 
   --swap-card: var(--swap-card);
   --swap-card-border: var(--swap-card-border);
+
+ --real-estate: var(--real-estate);
+--commodities: var(--commodities);
+--private-credit: var(--private-credit);
+--art-collectibles: var(--art-collectibles);
+--infrastructure: var(--infrastructure);
+--agriculture: var(--agriculture)
+
 }
 
 
