@@ -5,10 +5,10 @@ import AssetTabs, {
   TabConfig,
 } from "@evolt/components/features/dashboard/AssetManagementTabs";
 import AssetContent from "@evolt/components/features/dashboard/AssetContent";
-import WithdrawContent from "@evolt/components/features/dashboard/WithdrawContent";
 import { useSearchParams } from "next/navigation";
 import { BackButton } from "@evolt/components/common/BackButton";
 import Deposit from "@evolt/components/features/dashboard/Deposit";
+import Withdraw from "@evolt/components/features/dashboard/Withdraw";
 
 const Tabs: TabConfig[] = [
   {
@@ -30,7 +30,7 @@ const Tabs: TabConfig[] = [
     label: "Withdraw",
     icon: ArrowUpRight,
     type: "tab" as const,
-    content: <WithdrawContent />,
+    content: <Withdraw />,
   },
 ];
 

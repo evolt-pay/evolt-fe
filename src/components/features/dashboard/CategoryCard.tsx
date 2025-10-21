@@ -11,19 +11,20 @@ interface CategoryCardProps {
 const CategoryCard = ({ title, image, colorClass }: CategoryCardProps) => {
   return (
     <Card
-      className={`${colorClass} overflow-hidden border-none cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl group w-full`}
+      className={`${colorClass} overflow-hidden border-none cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl group w-full h-[220px]  `}
     >
-      <div className="p-4 pb-2">
-        <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-      </div>
-      <div className="px-4 pb-4">
-        <div className="aspect-[4/3] rounded-xl overflow-hidden">
+      {/* Title */}
+      {/* <h3 className="text-lg font-semibold text-foreground">{title}</h3> */}
+
+      {/* Image */}
+      <div className=" h-full bg-red-600">
+        {/* <div className="w-full rounded-xl overflow-hidden">
           <img
             src={image}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
-        </div>
+        </div> */}
       </div>
     </Card>
   );

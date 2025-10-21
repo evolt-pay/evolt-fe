@@ -5,8 +5,7 @@ import { ExternalLink, Info } from "lucide-react";
 
 interface InvoiceCardProps {
   invoiceNumber: string;
-  fromCompany: string;
-  toCompany: string;
+
   logoUrl?: string;
   smeVendorDescription: string;
   corporatePayerDescription: string;
@@ -54,8 +53,7 @@ const BadgeCheck: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export const InvoiceCard = ({
   invoiceNumber,
-  fromCompany,
-  toCompany,
+
   logoUrl,
   smeVendorDescription,
   corporatePayerDescription,
@@ -87,9 +85,6 @@ export const InvoiceCard = ({
           <h1 className="text-2xl sm:text-3xl font-bold text-invoice-text mb-1">
             Invoice {invoiceNumber}
           </h1>
-          <p className="text-base sm:text-lg text-invoice-text-muted truncate">
-            {fromCompany} to {toCompany}
-          </p>
         </div>
       </div>
 

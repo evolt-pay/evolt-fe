@@ -5,7 +5,7 @@ import { BackButton } from "@evolt/components/common/BackButton";
 import { InvestmentCard } from "@evolt/components/features/dashboard/InvestmentCard";
 import CategoryCard from "@evolt/components/features/dashboard/CategoryCard";
 import { PoolItem } from "@evolt/types/pool";
-import { useAssetsByType, usePrefetchPoolDetails, AssetType } from "./api"; // Changed import
+import { useAssetsByType, usePrefetchPoolDetails, AssetType } from "./api"; // Unchanged import
 import { Search, TrendingUp, DollarSign, Clock } from "lucide-react";
 import { Button } from "@evolt/components/ui/button";
 import { Input } from "@evolt/components/ui/input";
@@ -47,11 +47,35 @@ const categories = [
   },
 ];
 
-function toCardStatus(item: PoolItem): "Open" | "Closed" | "Pending" {
-  const pct =
-    typeof item.fundingProgress === "number" ? item.fundingProgress : 0;
-  if (pct >= 100) return "Closed";
-  if ((item.daysLeft ?? 0) <= 0) return "Closed";
+// Helper function to calculate days left from expiryDate
+function getDaysLeft(expiryDate: string | null): number {
+  if (!expiryDate) return 0;
+  try {
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry.getTime() - now.getTime();
+    if (diffTime <= 0) return 0;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  } catch {
+    return 0;
+  }
+}
+
+// Helper to determine status based on new and derived fields
+function toCardStatus(
+  item: PoolItem,
+  daysLeft: number,
+  percentage: number
+): "Open" | "Closed" | "Pending" {
+  // Prioritize the API status field
+  if (item.status === "funding") return "Open";
+  if (item.status === "fully_funded" || item.status === "tokenized")
+    return "Closed";
+  if (item.status === "pending") return "Pending";
+
+  // Fallback logic if API status is not one of the above
+  if (percentage >= 100) return "Closed";
+  if (daysLeft <= 0) return "Closed";
   return "Open";
 }
 
@@ -68,7 +92,7 @@ export default function PoolsPage() {
   });
   const prefetch = usePrefetchPoolDetails();
 
-  const items = data?.items ?? [];
+  const items = data ?? [];
 
   return (
     <div className="mt-10 w-full max-w-6xl m-auto space-y-8">
@@ -137,6 +161,7 @@ export default function PoolsPage() {
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="funding">Open</SelectItem>
                 <SelectItem value="fully_funded">Closed</SelectItem>
+                <SelectItem value="tokenized">Tokenized</SelectItem>
               </SelectContent>
             </Select>
 
@@ -178,24 +203,28 @@ export default function PoolsPage() {
 
         {!isLoading && !isError && items.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* THIS IS THE CORRECTED MAPPING LOGIC */}
             {items.map((it) => {
+              // Use new fields from API
+              const fundedAmount = it.amount ?? 0;
+              const totalTarget = it.totalTarget ?? 0;
+              const daysLeft = getDaysLeft(it.expiryDate);
+
               const pct =
-                typeof it.fundingProgress === "number"
-                  ? Math.max(0, Math.min(100, Math.round(it.fundingProgress)))
-                  : it.totalTarget && it.fundedAmount
+                totalTarget > 0
                   ? Math.max(
                       0,
                       Math.min(
                         100,
-                        Math.round((it.fundedAmount / it.totalTarget) * 100)
+                        Math.round((fundedAmount / totalTarget) * 100)
                       )
                     )
-                  : 0;
+                  : 100; // Assume 100% if no target
 
-              const status = toCardStatus(it);
+              const status = toCardStatus(it, daysLeft, pct);
               const leftText =
                 status === "Open"
-                  ? `${Math.max(0, it.daysLeft ?? 0)} Days Left`
+                  ? `${daysLeft} Days Left`
                   : pct >= 100
                   ? "Fully Subscribed"
                   : "Closed";
@@ -204,15 +233,13 @@ export default function PoolsPage() {
                 <div key={it._id} onMouseEnter={() => prefetch(it._id)}>
                   <InvestmentCard
                     id={it._id}
-                    name={it.corporateName ?? it.businessName ?? "Unnamed Pool"}
+                    name={it.tokenName ?? "Unnamed Pool"}
                     subtitle={
-                      it.businessName && it.corporateName
-                        ? it.businessName
-                        : undefined
+                      it.assetType ? `Asset Type: ${it.assetType}` : "N/A"
                     }
-                    logo={it.corporateLogo ?? undefined}
-                    apy={`${it.yieldRate}%`}
-                    totalTarget={`${formatCurrency(it.totalTarget)}`}
+                    logo={undefined}
+                    apy={`${(it.yieldRate * 100).toFixed(1)}%`}
+                    totalTarget={formatCurrency(it.totalTarget)}
                     fundingStatus={status}
                     fundingPercentage={pct}
                     progressLeftText={leftText}

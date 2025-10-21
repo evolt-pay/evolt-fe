@@ -64,8 +64,6 @@ export default function Page() {
         <>
           <InvoiceCard
             invoiceNumber={`#${data.invoiceNumber}`}
-            fromCompany={data.businessName}
-            toCompany={data.corporateName}
             logoUrl={data.corporateLogo ?? undefined}
             smeVendorDescription={data.businessDescription || "—"}
             corporatePayerDescription={data.corporateDescription || "—"}
