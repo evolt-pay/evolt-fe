@@ -16,9 +16,7 @@ export const TokenSwap = () => {
   const [depositAmount, setDepositAmount] = useState("");
   const [vusdAmount, setVusdAmount] = useState("");
   const [showDepositModal, setShowDepositModal] = useState(false);
-  const [depositAddress] = useState(
-    "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-  );
+
   const [timeLeft, setTimeLeft] = useState(600);
 
   const handleDepositAmountChange = (value: string) => {

@@ -7,13 +7,11 @@ export const TokenWithdraw = () => {
   const [usdcAmount, setUsdcAmount] = useState("");
 
   const handleWithdrawAmountChange = (value: string) => {
-    // Only allow numbers and one decimal point
     if (/^\d*\.?\d*$/.test(value)) {
       setWithdrawAmount(value);
 
       if (value && !isNaN(parseFloat(value))) {
-        // Assuming a 1:1 swap rate for simplicity
-        setUsdcAmount(parseFloat(value).toFixed(2));
+        setUsdcAmount((parseFloat(value) * 0.991).toFixed(2));
       } else {
         setUsdcAmount("");
       }
