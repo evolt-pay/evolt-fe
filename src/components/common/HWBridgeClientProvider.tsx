@@ -9,11 +9,8 @@ import React, {
 } from "react";
 import Header from "@evolt/components/common/Header";
 import PageLoader from "./PageLoader";
+import { getHashinalsSDK } from "@evolt/lib/hashinalsClient";
 import { HashinalsWalletConnectSDK } from "@hashgraphonline/hashinal-wc";
-import { LedgerId } from "@hashgraph/sdk";
-
-const logoUrl = process.env.NEXT_PUBLIC_LOGO_URL as string;
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
 
 interface HWBridgeContextType {
   sdk: HashinalsWalletConnectSDK | null;
@@ -40,51 +37,44 @@ export function HWBridgeClientProvider({
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // --- Initialize SDK on mount ---
   useEffect(() => {
-    async function initSDK() {
-      try {
-        const metadata = {
-          name: "My awesome dApp",
-          description: "Created using Hashgraph React Wallets",
-          icons: [logoUrl],
-          url: typeof window !== "undefined" ? window.location.href : "",
-        };
+    let mounted = true;
 
-        const instance = HashinalsWalletConnectSDK.getInstance();
-        await instance.init(projectId, metadata, LedgerId.TESTNET);
+    async function init() {
+      try {
+        const instance = await getHashinalsSDK();
+        if (!mounted) return;
         setSdk(instance);
 
-        // Restore from localStorage if available
         const storedAccountId = localStorage.getItem("connectedAccountId");
         const storedPublicKey = localStorage.getItem("connectedPublicKey");
 
         if (storedAccountId) setAccountId(storedAccountId);
         if (storedPublicKey) setPublicKey(storedPublicKey);
       } catch (err) {
-        console.error("❌ Failed to initialize Hashinals SDK:", err);
+        console.error("Failed to initialize Hashinals SDK:", err);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     }
 
-    initSDK();
+    init();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // --- Extract accountId from session object ---
-  function extractAccountId(session: any): string | null {
+  const extractAccountId = (session: any): string | null => {
     const accounts = session?.namespaces?.hedera?.accounts;
-    if (!accounts?.length) return null;
-    return accounts[0].split(":").pop() || null;
-  }
+    return accounts?.length ? accounts[0].split(":").pop() || null : null;
+  };
 
-  // --- Connect to wallet ---
   const connect = useCallback(async () => {
     if (!sdk) return { accountId: null, publicKey: null };
 
     try {
       const connectedAccount = await sdk.connect();
-
       const id = extractAccountId(connectedAccount);
       const pubKey = connectedAccount?.sessionProperties?.publicKey || null;
 
@@ -100,12 +90,11 @@ export function HWBridgeClientProvider({
 
       return { accountId: id, publicKey: pubKey };
     } catch (err) {
-      console.error("❌ Connection failed:", err);
+      console.error("Connection failed:", err);
       return { accountId: null, publicKey: null };
     }
   }, [sdk]);
 
-  // --- Disconnect from wallet ---
   const disconnect = useCallback(async () => {
     if (!sdk) return;
     try {
@@ -120,19 +109,11 @@ export function HWBridgeClientProvider({
     }
   }, [sdk]);
 
-  if (loading) {
-    return <PageLoader />;
-  }
+  if (loading) return <PageLoader />;
 
   return (
     <HWBridgeContext.Provider
-      value={{
-        sdk,
-        accountId,
-        publicKey,
-        connect,
-        disconnect,
-      }}
+      value={{ sdk, accountId, publicKey, connect, disconnect }}
     >
       <Header />
       {children}
@@ -140,7 +121,6 @@ export function HWBridgeClientProvider({
   );
 }
 
-// --- Hook to use anywhere in your app ---
 export function useHWBridge() {
   const context = useContext(HWBridgeContext);
   if (!context) {

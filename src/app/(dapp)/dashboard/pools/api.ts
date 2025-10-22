@@ -32,7 +32,7 @@ export function usePools(params: {
   search?: string;
 }) {
   const { page = 1, limit = 20, status = "all", search } = params || {};
-  // The return type is now PoolItem[]
+
   return useQuery<PoolItem[]>({
     queryKey: poolsKeys.list({
       page,
@@ -44,20 +44,19 @@ export function usePools(params: {
       const { data } = await apiClient.get<{
         success: boolean;
         message: string;
-        data: PoolItem[]; // The data is now an array
+        data: PoolItem[];
       }>("/pool/", {
         params: { page, limit, status, ...(search ? { search } : {}) },
         signal,
       });
       if (!data?.success) throw new Error("Failed to fetch pools");
-      return data.data; // Return the array directly
+      return data.data;
     },
-    staleTime: 1000 * 60 * 1, // 1 minute stale time
+    staleTime: 1000 * 60 * 1,
   });
 }
 
 export function usePoolDetails(poolId?: string) {
-  // This hook still returns a single PoolItem
   return useQuery<PoolItem>({
     queryKey: poolsKeys.detail(poolId ?? ""),
     enabled: !!poolId,
@@ -67,12 +66,11 @@ export function usePoolDetails(poolId?: string) {
         throw new Error(data?.error || "Failed to fetch pool details");
       return data.data as PoolItem;
     },
-    staleTime: 1000 * 60 * 1, // 1 minute stale time
+    staleTime: 1000 * 60 * 1,
   });
 }
 
 export function usePoolDetailsSuspense(poolId: string) {
-  // This hook still returns a single PoolItem
   return useSuspenseQuery<PoolItem>({
     queryKey: poolsKeys.detail(poolId),
     queryFn: async ({ signal }) => {
@@ -81,7 +79,7 @@ export function usePoolDetailsSuspense(poolId: string) {
         throw new Error(data?.error || "Failed to fetch pool details");
       return data.data as PoolItem;
     },
-    staleTime: 1000 * 60 * 1, // 1 minute stale time
+    staleTime: 1000 * 60 * 1,
   });
 }
 
@@ -96,7 +94,7 @@ export function usePrefetchPoolDetails() {
           throw new Error(data?.error || "Failed to fetch pool details");
         return data.data as PoolItem;
       },
-      staleTime: 1000 * 60 * 1, // 1 minute stale time
+      staleTime: 1000 * 60 * 1,
     });
 }
 
@@ -114,14 +112,14 @@ export function useAssetsByType(params: {
   limit?: number;
 }) {
   const { type, page = 1, limit = 20 } = params;
-  // The return type is now PoolItem[]
+
   return useQuery<PoolItem[]>({
     queryKey: assetsKeys.byType({ type, page, limit }),
     queryFn: async ({ signal }) => {
       const { data } = await apiClient.get<{
         success: boolean;
         message: string;
-        data: PoolItem[]; // The data is now an array
+        data: PoolItem[];
       }>(`/asset/type/${type}`, {
         params: { page, limit },
         signal,
@@ -130,6 +128,6 @@ export function useAssetsByType(params: {
         throw new Error(`Failed to fetch assets of type ${type}`);
       return data.data;
     },
-    staleTime: 1000 * 60 * 1, // 1 minute stale time
+    staleTime: 1000 * 60 * 1,
   });
 }

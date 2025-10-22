@@ -1,4 +1,3 @@
-import Header from "@evolt/components/common/Header";
 import React from "react";
 import { HWBridgeClientProvider } from "@evolt/components/common/HWBridgeClientProvider";
 
