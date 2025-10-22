@@ -11,8 +11,8 @@ import apiClient from "@evolt/lib/apiClient";
 import { toast } from "sonner";
 
 const VUSD_TOKEN_ID = process.env.NEXT_PUBLIC_HEDERA_VUSD_TOKEN_ID!;
-const USDC_TOKEN_ID = "0.0.456858";
-const TREASURY_ACCOUNT_ID = "0.0.6999610";
+const USDC_TOKEN_ID = process.env.NEXT_PUBLIC_HEDERA_USDC_TOKEN_ID!;
+const TREASURY_ACCOUNT_ID = "0.0.6968947";
 
 interface WithdrawParams {
   userAccountId: string;
@@ -44,6 +44,7 @@ export function useTokenWithdraw(): UseTokenWithdrawResult {
         toast.error("Wallet not connected");
         return;
       }
+      const convertedAmount = amount * 1e6;
 
       try {
         setLoading(true);
@@ -58,30 +59,40 @@ export function useTokenWithdraw(): UseTokenWithdrawResult {
           .addTokenTransfer(
             TokenId.fromString(VUSD_TOKEN_ID),
             userAccountId,
-            -amount
+            -convertedAmount
           )
           .addTokenTransfer(
             TokenId.fromString(VUSD_TOKEN_ID),
             TREASURY_ACCOUNT_ID,
-            amount
+            convertedAmount
           )
           // This part is the testnet "cheat" to automatically send USDC back
           // In production, a backend service would do this after verifying the VUSD transfer
-          .addTokenTransfer(
-            TokenId.fromString(USDC_TOKEN_ID),
-            userAccountId,
-            amount // Assuming 1:1 swap rate
-          )
+          // .addTokenTransfer(
+          //   TokenId.fromString(USDC_TOKEN_ID),
+          //   TREASURY_ACCOUNT_ID,
+          //   -amount // Assuming 1:1 swap rate
+          // )
+
+
+
           .setTransactionId(
             TransactionId.generate(AccountId.fromString(userAccountId))
           );
 
         // Try to sign and execute. We'll proceed to backend call even if it fails (testnet logic)
         try {
-          await sdk.dAppConnector.signAndExecuteTransaction({
+          const trans: any = await sdk?.dAppConnector.signAndExecuteTransaction({
             signerAccountId: userAccountId,
             transactionList: transactionToBase64String(vusdTx),
           });
+          const res = await apiClient.post("/swap/withdraw/settle", {
+            investorAccountId: userAccountId,
+            token: "USDC",
+            amount,
+            txId: trans?.transactionId,
+          });
+          console.log(res.data);
           toast.success("Withdrawal transaction sent!");
         } catch (hederaErr) {
           console.warn(
@@ -92,13 +103,8 @@ export function useTokenWithdraw(): UseTokenWithdrawResult {
         }
 
         // Call backend to log withdrawal and (in testnet) get automatic USDC
-        const res = await apiClient.post("/swap/withdraw", {
-          // This endpoint is hypothetical
-          accountId: userAccountId,
-          amount,
-        });
 
-        console.log(res.data);
+
         toast.success("Withdrawal processed. You will receive USDC shortly.");
         setSuccess(true);
       } catch (err: any) {

@@ -30,6 +30,7 @@ export function useTokenSwap(): UseTokenSwapResult {
   const { sdk } = useHWBridge();
   const swap = useCallback(async (params: SwapParams) => {
     const { usdcTokenId, userAccountId, treasuryAccountId, amount } = params;
+    const convertedAmount = amount * 1e6;
     try {
       setLoading(true);
       setError(null);
@@ -39,25 +40,33 @@ export function useTokenSwap(): UseTokenSwapResult {
         .addTokenTransfer(
           TokenId.fromString(usdcTokenId),
           userAccountId,
-          -amount
+          -convertedAmount
         )
         .addTokenTransfer(
           TokenId.fromString(usdcTokenId),
           treasuryAccountId,
-          amount
+          convertedAmount
         )
-        .addTokenTransfer(
-          TokenId.fromString("0.0.7029847"),
-          userAccountId,
-          amount
-        )
+        // .addTokenTransfer(
+        //   TokenId.fromString("0.0.7029847"),
+        //   userAccountId,
+        //   amount
+        // )
         .setTransactionId(TransactionId.generate(userAccountId));
 
       try {
-        await sdk?.dAppConnector.signAndExecuteTransaction({
+        const trans: any = await sdk?.dAppConnector.signAndExecuteTransaction({
           signerAccountId: userAccountId,
           transactionList: transactionToBase64String(usdcTx),
         });
+
+        await apiClient.post("/swap/deposit/settle", {
+          investorAccountId: userAccountId,
+          token: "USDC",
+          amount,
+          txId: trans?.transactionId,
+        });
+
       } catch (hederaErr) {
         console.warn(
           "Hedera transaction failed, proceeding anyway:",
@@ -65,12 +74,7 @@ export function useTokenSwap(): UseTokenSwapResult {
         );
       }
 
-      const res = await apiClient.post("/swap/prepare", {
-        accountId: userAccountId,
-        amount,
-      });
 
-      console.log(res.data);
 
       setSuccess(true);
     } catch (err: any) {

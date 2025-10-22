@@ -35,7 +35,7 @@ export const DepositSummaryCard = ({
     setLoading(true);
     try {
       await swap({
-        treasuryAccountId: "0.0.6999610",
+        treasuryAccountId: "0.0.6968947",
         userAccountId: accountId,
         usdcTokenId: process.env.NEXT_PUBLIC_HEDERA_USDC_TOKEN_ID!,
         amount,
