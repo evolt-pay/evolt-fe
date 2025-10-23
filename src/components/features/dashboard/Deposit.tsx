@@ -1,12 +1,11 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
-import { Button } from "@evolt/components/ui/button";
-import { useTokenAssociation } from "@evolt/hooks/useTokenAssociation";
-import { AssociateTokenDialog } from "@evolt/components/common/AssociateTokenModal";
-import { useHWBridge } from "@evolt/components/common/HWBridgeClientProvider";
+import { useTokenAssociation } from "../../../hooks/useTokenAssociation";
+import { AssociateTokenDialog } from "../../common/AssociateTokenModal";
+import { useHWBridge } from "../../common/HWBridgeClientProvider";
 import { TokenSwap } from "./swap";
 import { DepositSkeleton } from "./DepositLoader";
+import { StatusDisplay } from "../../common/StatusDisplay";
 
 const tokenId = process.env.NEXT_PUBLIC_HEDERA_VUSD_TOKEN_ID!;
 
@@ -27,10 +26,17 @@ export default function Deposit() {
   return (
     <div className="space-y-3">
       {loading && <DepositSkeleton />}
-      {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      {isTokenAssociated === null && !loading && (
-        <p>Unable to determine token association.</p>
+      {error && !loading && (
+        <StatusDisplay type="error" title="Association Error" message={error} />
+      )}
+
+      {isTokenAssociated === null && !loading && !error && (
+        <StatusDisplay
+          type="warning"
+          title="Wallet Status Unknown"
+          message="Could not determine token association status. Please ensure your wallet is connected and try refreshing."
+        />
       )}
 
       {isTokenAssociated === true && <TokenSwap />}

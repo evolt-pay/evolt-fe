@@ -1,9 +1,3 @@
-
-
-
-
-
-
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -51,12 +45,13 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* Fonts */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  
+  --font-sans: var(--font-urbanist), var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
 
   /* Radius + Shadows */
@@ -121,6 +116,7 @@
 
 
 @theme inline {
+   --font-sans: var(--font-urbanist), "Urbanist", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -165,7 +161,7 @@
 --private-credit: var(--private-credit);
 --art-collectibles: var(--art-collectibles);
 --infrastructure: var(--infrastructure);
---agriculture: var(--agriculture)
+--agriculture: var(--agriculture);
 
 }
 

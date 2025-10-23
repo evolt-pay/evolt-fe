@@ -101,6 +101,7 @@ export function usePrefetchPoolDetails() {
 export type AssetType =
   | "invoice"
   | "real_estate"
+  | "automotive_equipment"
   | "agriculture"
   | "creator_ip"
   | "receivable"

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { BackButton } from "@evolt/components/common/BackButton";
 import { InvestmentCard } from "@evolt/components/features/dashboard/InvestmentCard";
@@ -10,32 +9,50 @@ import { Search } from "lucide-react";
 import { Input } from "@evolt/components/ui/input";
 import { PoolStatus } from "@evolt/types/pool";
 import { formatCurrency } from "@evolt/lib/formatCurrency";
+import { StatusDisplay } from "@evolt/components/common/StatusDisplay";
+import { cn } from "@evolt/lib/utils";
 
-const categories = [
+const categories: {
+  title: string;
+  image: string;
+  colorClass: string;
+  type: AssetType;
+}[] = [
+  {
+    title: "All Assets",
+    image: "/img/all.jpeg",
+    colorClass: "bg-primary/70",
+    type: "all",
+  },
   {
     title: "Real Estate",
     image: "/img/real-estate.jpg",
     colorClass: "bg-[hsl(var(--real-estate))]",
+    type: "real_estate",
   },
   {
     title: "Agriculture",
     image: "/img/agriculture.jpg",
     colorClass: "bg-[hsl(var(--agriculture))]",
+    type: "agriculture",
   },
   {
-    title: "Private Credit",
-    image: "/img/private-credit.jpg",
-    colorClass: "bg-[hsl(var(--private-credit))]",
-  },
-  {
-    title: "Art & Collectibles",
+    title: "Creator IP",
     image: "/img/art-collectibles.jpg",
     colorClass: "bg-[hsl(var(--art-collectibles))]",
+    type: "creator_ip",
   },
   {
-    title: "Infrastructure",
+    title: "Receivables Factoring",
+    image: "/img/private-credit.jpg",
+    colorClass: "bg-[hsl(var(--private-credit))]",
+    type: "receivable",
+  },
+  {
+    title: "Automotive & Equipment",
     image: "/img/infrastructure.jpg",
     colorClass: "bg-[hsl(var(--infrastructure))]",
+    type: "automotive_equipment",
   },
 ];
 
@@ -57,10 +74,10 @@ function toCardStatus(
   daysLeft: number,
   percentage: number
 ): "Open" | "Closed" | "Pending" {
-  if (item.status === "funding") return "Open";
-  if (item.status === "fully_funded" || item.status === "tokenized")
+  if (item?.status === "funding") return "Open";
+  if (item?.status === "fully_funded" || item?.status === "tokenized")
     return "Closed";
-  if (item.status === "pending") return "Pending";
+  if (item?.status === "pending") return "Pending";
 
   if (percentage >= 100) return "Closed";
   if (daysLeft <= 0) return "Closed";
@@ -89,14 +106,24 @@ export default function PoolsPage() {
       </div>
 
       <div className="mb-8 overflow-x-auto bg-black p-4 rounded-xl ">
-        <div className="flex gap-4 justify-between">
+        <div className="flex gap-4 min-w-max">
           {categories.map((category) => (
-            <CategoryCard
+            <div
               key={category.title}
-              title={category.title}
-              image={category.image}
-              colorClass={category.colorClass}
-            />
+              className={cn(
+                "w-48 flex-shrink-0 rounded-2xl transition-all duration-300",
+                assetType === category.type
+                  ? "ring-2 ring-primary ring-offset-2 ring-offset-black"
+                  : "opacity-70 hover:opacity-100"
+              )}
+              onClick={() => setAssetType(category.type)}
+            >
+              <CategoryCard
+                title={category.title}
+                image={category.image}
+                colorClass={category.colorClass}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -117,30 +144,40 @@ export default function PoolsPage() {
       <div className="mt-12">
         {isLoading && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="h-40 rounded-2xl bg-muted animate-pulse" />
-            <div className="h-40 rounded-2xl bg-muted animate-pulse" />
-            <div className="h-40 rounded-2xl bg-muted animate-pulse" />
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="h-60 rounded-3xl bg-muted/50 animate-pulse border border-border"
+              />
+            ))}
           </div>
         )}
 
         {isError && (
-          <div className="text-sm text-red-400">
-            {(error as Error)?.message ?? "Failed to load pools"}
-          </div>
+          <StatusDisplay
+            type="error"
+            title="Failed to Load Pools"
+            message={
+              (error as Error)?.message ??
+              "There was a problem fetching investment pools. Please try again later."
+            }
+          />
         )}
 
         {!isLoading && !isError && items.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>No investment pools found matching your criteria.</p>
-          </div>
+          <StatusDisplay
+            type="empty"
+            title="No Pools Found"
+            message={`No investment pools found for the "${assetType}" category. Try selecting another category.`}
+          />
         )}
 
         {!isLoading && !isError && items.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {items.map((it) => {
-              const fundedAmount = it.amount ?? 0;
-              const totalTarget = it.totalTarget ?? 0;
-              const daysLeft = getDaysLeft(it.expiryDate);
+              const fundedAmount = it?.amount ?? 0;
+              const totalTarget = it?.totalTarget ?? 0;
+              const daysLeft = getDaysLeft(it?.expiryDate ?? null);
 
               const pct =
                 totalTarget > 0
@@ -151,7 +188,9 @@ export default function PoolsPage() {
                         Math.round((fundedAmount / totalTarget) * 100)
                       )
                     )
-                  : 100;
+                  : fundedAmount > 0
+                  ? 100
+                  : 0;
 
               const status = toCardStatus(it, daysLeft, pct);
               const leftText =
@@ -159,24 +198,28 @@ export default function PoolsPage() {
                   ? `${daysLeft} Days Left`
                   : pct >= 100
                   ? "Fully Subscribed"
-                  : "Closed";
+                  : status === "Closed"
+                  ? "Closed"
+                  : "Status Unavailable";
 
               return (
-                <div key={it._id} onMouseEnter={() => prefetch(it._id)}>
-                  <InvestmentCard
-                    id={it._id}
-                    name={it.tokenName ?? "Unnamed Pool"}
-                    subtitle={
-                      it.assetType ? `Asset Type: ${it.assetType}` : "N/A"
-                    }
-                    logo={undefined}
-                    apy={`${(it.yieldRate * 100).toFixed(1)}%`}
-                    totalTarget={formatCurrency(it.totalTarget)}
-                    fundingStatus={status}
-                    fundingPercentage={pct}
-                    progressLeftText={leftText}
-                  />
-                </div>
+                it?._id && (
+                  <div key={it._id} onMouseEnter={() => prefetch(it._id)}>
+                    <InvestmentCard
+                      id={it._id}
+                      name={it.tokenName ?? "Unnamed Pool"}
+                      subtitle={
+                        it.assetType ? `Asset Type: ${it.assetType}` : undefined
+                      }
+                      logo={undefined}
+                      apy={`${((it.yieldRate ?? 0) * 100).toFixed(1)}%`}
+                      totalTarget={formatCurrency(it.totalTarget ?? 0)}
+                      fundingStatus={status}
+                      fundingPercentage={pct}
+                      progressLeftText={leftText}
+                    />
+                  </div>
+                )
               );
             })}
           </div>
