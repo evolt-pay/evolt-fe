@@ -17,7 +17,7 @@ const CategoryCard = ({ title, image, colorClass }: CategoryCardProps) => {
       {/* <h3 className="text-lg font-semibold text-foreground">{title}</h3> */}
 
       {/* Image */}
-      <div className=" h-full bg-red-600">
+      <div className=" h-full ">
         {/* <div className="w-full rounded-xl overflow-hidden">
           <img
             src={image}

@@ -145,12 +145,12 @@ export default function PoolsPage() {
               const pct =
                 totalTarget > 0
                   ? Math.max(
-                      0,
-                      Math.min(
-                        100,
-                        Math.round((fundedAmount / totalTarget) * 100)
-                      )
+                    0,
+                    Math.min(
+                      100,
+                      Math.round((fundedAmount / totalTarget) * 100)
                     )
+                  )
                   : 100;
 
               const status = toCardStatus(it, daysLeft, pct);
@@ -158,8 +158,8 @@ export default function PoolsPage() {
                 status === "Open"
                   ? `${daysLeft} Days Left`
                   : pct >= 100
-                  ? "Fully Subscribed"
-                  : "Closed";
+                    ? "Fully Subscribed"
+                    : "Closed";
 
               return (
                 <div key={it._id} onMouseEnter={() => prefetch(it._id)}>

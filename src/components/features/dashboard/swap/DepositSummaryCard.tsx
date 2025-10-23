@@ -83,7 +83,7 @@ export const DepositSummaryCard = ({
         disabled={!hasAmount || loading}
         loading={loading}
       >
-        {loading ? "Processing..." : "Get Deposit Address"}
+        {loading ? "Processing..." : "Deposit "}
       </Button>
 
       {/* Info Message */}
