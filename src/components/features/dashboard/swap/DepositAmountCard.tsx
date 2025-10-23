@@ -54,8 +54,8 @@ export const DepositAmountCard = ({
         </div>
 
         {/* Direction Indicator - Hidden on mobile, shown as divider on desktop */}
-        <div className="hidden md:flex items-center justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-black border border-input-border rounded-full p-2">
+        <div className="hidden md:flex items-center justify-center absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="bg-black  p-2">
             <ArrowDown className="w-4 h-4 text-muted-foreground rotate-[-90deg]" />
           </div>
         </div>
